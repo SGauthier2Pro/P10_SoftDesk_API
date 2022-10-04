@@ -1,7 +1,6 @@
 from django.db import models, transaction
 from django.conf import settings
 
-
 TYPES = (
     ('BACKEND', 'back-end'),
     ('FRONTEND', 'front-end'),
