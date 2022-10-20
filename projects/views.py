@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404, HttpResponseForbidden
 
-from projects.permissions import IsAuthor, IsAuthenticated
+from projects.permissions import IsAuthenticated
 from projects.models import Project, Issue, Comment, Contributor
 from projects.serializers import ProjectListSerializer, \
     ProjectDetailSerializer, \
@@ -68,6 +68,16 @@ class ProjectViewset(MultipleSerializerMixin, ModelViewSet):
                 "Vous n'êtes pas authorisé a modifier ce projet"
             )
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = request.user
+        if instance.author_user_id == user:
+            self.perform_destroy(instance)
+            return Response({'message': 'Le projet a bien été supprimer'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Action interdite'},
+                            status=status.HTTP_403_FORBIDDEN)
 
 class IssueViewset(MultipleSerializerMixin, ReadOnlyModelViewSet):
 
