@@ -17,10 +17,23 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from projects.views import ProjectViewset
+from projects.views import ProjectViewset, IssueViewset, CommentViewset, \
+    ContributorViewset
 
 router = routers.SimpleRouter()
-router.register('projects', ProjectViewset, basename='projects')
+router.register('projects',
+                ProjectViewset,
+                basename='projects')
+router.register(r'projects/(?P<project_id>\d+)/issues',
+                IssueViewset,
+                basename='issues')
+router.register(r'projects/(?P<project_id>\d+)/issues/('
+                r'?P<issue_id>\d+)/comments',
+                CommentViewset,
+                basename='comments')
+router.register(r'projects/(?P<project_id>\d+)/users',
+                ContributorViewset,
+                basename='users')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

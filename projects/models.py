@@ -28,7 +28,11 @@ STATUS = (
 
 PERMISSIONS = (
     ('author', 'Auteur'),
-    ('responsible', 'Responsable'),
+    ('contributor', 'Contributeur')
+)
+
+ROLES = (
+    ('author', 'Auteur'),
     ('contributor', 'Contributeur')
 )
 
@@ -40,7 +44,8 @@ class Project(models.Model):
     type = models.CharField(max_length=30,
                             choices=TYPES)
     author_user_id = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                       on_delete=models.CASCADE)
+                                       on_delete=models.CASCADE,
+                                       null=True)
 
 
 class Issue(models.Model):
@@ -57,7 +62,12 @@ class Issue(models.Model):
     status = models.CharField(max_length=30,
                               choices=STATUS)
     author_user_id = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                       on_delete=models.CASCADE)
+                                       on_delete=models.CASCADE,
+                                       related_name='author')
+    assignee_user_id = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                         on_delete=models.CASCADE,
+                                         related_name='assignee_user_id',
+                                         null=True)
     created_time = models.DateTimeField(auto_now_add=True)
 
 
@@ -82,4 +92,4 @@ class Contributor(models.Model):
     permission = models.CharField(max_length=255,
                                   choices=PERMISSIONS)
     role = models.CharField(max_length=255,
-                            choices=PERMISSIONS)
+                            choices=ROLES)
