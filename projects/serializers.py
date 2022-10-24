@@ -106,3 +106,4 @@ class ContributorSerializer(ModelSerializer):
                   'project_id',
                   'permission',
                   'role']
+
