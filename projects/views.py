@@ -220,6 +220,54 @@ class CommentViewset(MultipleSerializerMixin, ModelViewSet):
         return Response({'message': 'Forbidden action'},
                         status=status.HTTP_403_FORBIDDEN)
 
+    def update(self, request, *args, **kwargs):
+        issue_id = self.kwargs['issue_id']
+        instance = self.get_object()
+        serializer = self.get_serializer(instance,
+                                         data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        if instance.issue_id.id == int(issue_id):
+            if instance.author_user_id.id == self.request.user.id:
+
+                instance = serializer.save()
+                self.perform_update(instance)
+                headers = self.get_success_headers(serializer.validated_data)
+                return Response(serializer.data,
+                                status=status.HTTP_206_PARTIAL_CONTENT,
+                                headers=headers)
+            else:
+                return Response(
+                    {'message': "Vous n'êtes pas authorisé à"
+                                " modifier ce commentaire"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        else:
+            return Response(
+                {
+                    'message': "ce commentaire n'existe pas pour ce problème"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def destroy(self, request, *args, **kwargs):
+        issue_id = self.kwargs['issue_id']
+        instance = self.get_object()
+        user = request.user
+        if instance.issue_id.id == int(issue_id):
+            if instance.author_user_id == user:
+                self.perform_destroy(instance)
+                return Response(
+                    {'message': 'Le commentaire a bien été supprimer'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Action interdite'},
+                                status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response(
+                {
+                    'message': "ce commentaire n'existe pas pour ce problème"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
 
