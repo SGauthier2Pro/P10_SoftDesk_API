@@ -193,6 +193,33 @@ class CommentViewset(MultipleSerializerMixin, ModelViewSet):
         else:
             raise Http404("Ce problème n'existe pas pour ce projet")
 
+    def create(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(
+            Project.objects.filter(id=project_id)
+        )
+        issue_id = self.kwargs['issue_id']
+        issue = get_object_or_404(
+            Issue.objects.filter(id=int(issue_id))
+        )
+        contributors = Contributor.objects.filter(project_id=project.id)
+        for contributor in contributors:
+            if contributor.user_id == self.request.user:
+                serializer = self.get_serializer(
+                    data={'description': request.data['description'],
+                          'author_user_id': self.request.user.id,
+                          'issue_id': issue.id,
+                          }
+                )
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data,
+                                status=status.HTTP_201_CREATED,
+                                headers=headers)
+        return Response({'message': 'Forbidden action'},
+                        status=status.HTTP_403_FORBIDDEN)
+
 
 class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
 
