@@ -1,14 +1,11 @@
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
-from django.http import Http404, HttpResponseForbidden
-from rest_framework.decorators import permission_classes
+from django.http import Http404
 
-from projects.permissions import IsAuthenticated, \
-    IsAuthor, \
-    IsProjectContributor
+from projects.permissions import IsAuthenticated
 from projects.models import Project, Issue, Comment, Contributor
 from projects.serializers import ProjectListSerializer, \
     ProjectDetailSerializer, \
@@ -69,7 +66,7 @@ class ProjectViewset(MultipleSerializerMixin, ModelViewSet):
                             headers=headers)
         else:
             return Response(
-                {'message': "Vous n'êtes pas authorisé a modifier ce projet"},
+                {'message': "Vous n'êtes pas authorisé à modifier ce projet"},
                 status=status.HTTP_403_FORBIDDEN
             )
 
@@ -81,7 +78,8 @@ class ProjectViewset(MultipleSerializerMixin, ModelViewSet):
             return Response({'message': 'Le projet a bien été supprimer'},
                             status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Action interdite'},
+            return Response({'message': "Vous n'êts pas autorisé "
+                                        "à supprimer ce projet"},
                             status=status.HTTP_403_FORBIDDEN)
 
 
@@ -125,7 +123,8 @@ class IssueViewset(MultipleSerializerMixin, ModelViewSet):
                 return Response(serializer.data,
                                 status=status.HTTP_201_CREATED,
                                 headers=headers)
-        return Response({'message': 'Forbidden action'},
+        return Response({'message': "Vous n'êtes pas contributeur "
+                                    "de ce projet"},
                         status=status.HTTP_403_FORBIDDEN)
 
     def update(self, request, *args, **kwargs):
@@ -165,9 +164,10 @@ class IssueViewset(MultipleSerializerMixin, ModelViewSet):
                 self.perform_destroy(instance)
                 return Response(
                     {'message': 'Le problème a bien été supprimer'},
-                                status=status.HTTP_200_OK)
+                    status=status.HTTP_200_OK)
             else:
-                return Response({'message': 'Action interdite'},
+                return Response({'message': "Vous n'êtes pas autorisé à "
+                                            "supprimer ce problème"},
                                 status=status.HTTP_403_FORBIDDEN)
         else:
             return Response(
@@ -217,7 +217,8 @@ class CommentViewset(MultipleSerializerMixin, ModelViewSet):
                 return Response(serializer.data,
                                 status=status.HTTP_201_CREATED,
                                 headers=headers)
-        return Response({'message': 'Forbidden action'},
+        return Response({'message': "Vous n'êtes pas "
+                                    "contributeur de ce projet"},
                         status=status.HTTP_403_FORBIDDEN)
 
     def update(self, request, *args, **kwargs):
@@ -257,9 +258,10 @@ class CommentViewset(MultipleSerializerMixin, ModelViewSet):
                 self.perform_destroy(instance)
                 return Response(
                     {'message': 'Le commentaire a bien été supprimer'},
-                                status=status.HTTP_200_OK)
+                    status=status.HTTP_200_OK)
             else:
-                return Response({'message': 'Action interdite'},
+                return Response({'message': "Vous n'êtes pas authorisé à"
+                                " supprimer ce commentaire"},
                                 status=status.HTTP_403_FORBIDDEN)
         else:
             return Response(
