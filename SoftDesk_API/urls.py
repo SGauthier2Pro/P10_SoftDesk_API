@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from projects.views import ProjectViewset, IssueViewset, CommentViewset, \
-    ContributorViewset
+from projects.views.projectviewset import ProjectViewset
+from projects.views.issueviewset import IssueViewset
+from projects.views.commentviewset import CommentViewset
+from projects.views.contributorviewset import ContributorViewset
 
 router = routers.SimpleRouter()
 router.register('projects',

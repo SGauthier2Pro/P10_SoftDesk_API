@@ -1,5 +1,8 @@
 from django.contrib import admin
-from projects.models import Project, Issue, Comment, Contributor
+from projects.models.project import Project
+from projects.models.issue import Issue
+from projects.models.comment import Comment
+from projects.models.contributor import Contributor
 
 admin.site.register(Project)
 admin.site.register(Issue)
