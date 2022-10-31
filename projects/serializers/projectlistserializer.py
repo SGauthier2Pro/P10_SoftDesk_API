@@ -1,3 +1,12 @@
+"""
+serializer class for project model
+@create : function for adding author id at creation
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 

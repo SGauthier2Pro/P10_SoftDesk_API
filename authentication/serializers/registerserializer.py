@@ -1,3 +1,11 @@
+"""
+Serializer class for registering a new user
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
@@ -28,12 +36,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('This username allready exists')
         return value
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
+    def validate(self, attributes):
+        if attributes['password'] != attributes['password2']:
             raise serializers.ValidationError(
                 {"password": "Password fields didn't match."})
 
-        return attrs
+        return attributes
 
     def create(self, validated_data):
         user = User.objects.create(

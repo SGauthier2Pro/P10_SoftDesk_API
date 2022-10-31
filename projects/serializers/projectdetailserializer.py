@@ -1,3 +1,14 @@
+"""
+serializer class for project model
+return the entire details of a project
+    @get_issues : included issues details
+    @get_contributors : included contributors list
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from projects.serializers.issuedetailserializer import IssueDetailSerializer

@@ -1,3 +1,17 @@
+"""
+Comment viewset class
+
+    @get_queryset : returning comment by its issue.project_ID
+    @perform_create : create Comment object including
+                        the author user POST method
+    @update : update the comment by its ID PUT method
+    @destroy : delete the comment by its ID DELETE method
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response

@@ -1,3 +1,13 @@
+"""
+serializer class for issue model
+return the entire details of an issue
+    @get_comments : included comment details
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from projects.serializers.commentserializer import CommentSerializer

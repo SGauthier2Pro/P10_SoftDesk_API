@@ -1,3 +1,11 @@
+"""
+view class managing token access distibution for users
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny
 

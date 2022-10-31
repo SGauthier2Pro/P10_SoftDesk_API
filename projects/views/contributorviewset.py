@@ -1,3 +1,17 @@
+"""
+Contributor viewset class
+
+    @get_queryset : returning contributors list by its project_ID
+    @perform_create : create a contributor object for its project_id
+                        POST method
+    @update : update the contributor object by its ID PUT method
+    @destroy : delete the contributor object by its ID DELETE method
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response

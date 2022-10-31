@@ -1,3 +1,17 @@
+"""
+Issue viewset class
+
+    @get_queryset : returning issue by its project_ID
+    @create : create Issue object checking the contributor status
+                        POST method
+    @update : update the issue by its ID PUT method
+    @destroy : delete the issue by its ID DELETE method
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response

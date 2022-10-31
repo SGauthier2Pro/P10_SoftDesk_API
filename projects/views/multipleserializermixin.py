@@ -1,3 +1,14 @@
+"""
+mixin class
+
+    @get_queryset : returning the detail serializer or simple list serializer
+                    following the request action type
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 class MultipleSerializerMixin:
 
     detail_serializer_class = None

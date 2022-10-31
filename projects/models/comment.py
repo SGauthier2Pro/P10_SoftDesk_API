@@ -1,3 +1,11 @@
+"""
+class Comment
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from django.db import models
 from django.conf import settings
 

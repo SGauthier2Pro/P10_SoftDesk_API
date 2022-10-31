@@ -1,3 +1,17 @@
+"""
+Project viewset class
+
+    @get_queryset : returning projects where user is contributor
+    @perform_create : create Project and contributors object including
+                        the author user POST method
+    @update : update the project by its ID PUT method
+    @destroy : delete the project by its ID DELETE method
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status

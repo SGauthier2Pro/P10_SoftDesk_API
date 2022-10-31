@@ -1,3 +1,11 @@
+"""
+view class managing the registering for new user
+
+@author : Sylvain GAUTHIER
+@version : 1.0
+"""
+
+
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User
 from authentication.serializers.registerserializer import RegisterSerializer
