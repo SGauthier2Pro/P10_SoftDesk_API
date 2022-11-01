@@ -1,5 +1,5 @@
 """
-view class managing token access distibution for users
+view class managing token access distribution for users
 
 @author : Sylvain GAUTHIER
 @version : 1.0

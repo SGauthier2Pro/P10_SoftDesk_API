@@ -33,7 +33,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError('This username allready exists')
+            raise serializers.ValidationError(
+                {'username': 'A user with that username already exists.'})
         return value
 
     def validate(self, attributes):
