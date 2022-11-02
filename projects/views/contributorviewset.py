@@ -50,20 +50,25 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
                 User.objects.filter(
                     username=tmp_serializer.initial_data['user_id'])
             )
-            contributor = Contributor(
-                user_id=user,
-                project_id=project,
-                permission=tmp_serializer.initial_data['permission'],
-                role=tmp_serializer.initial_data['role']
-            )
-            contributor_data = self.serializer_class(instance=contributor).data
-            serializer = self.get_serializer(data=contributor_data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED,
-                            headers=headers)
+            if user:
+                contributor = Contributor(
+                    user_id=user,
+                    project_id=project,
+                    permission=tmp_serializer.initial_data['permission'],
+                    role=tmp_serializer.initial_data['role']
+                )
+                contributor_data = self.serializer_class(
+                    instance=contributor).data
+                serializer = self.get_serializer(data=contributor_data)
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data,
+                                status=status.HTTP_201_CREATED,
+                                headers=headers)
+            else:
+                return Response({'username': "this user doesn't exists"},
+                                status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'message': 'Forbidden action'},
                             status=status.HTTP_403_FORBIDDEN)
