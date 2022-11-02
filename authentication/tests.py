@@ -98,3 +98,7 @@ class TestLogin(APITestCase):
         self.assertTrue('access' in response.data)
         token = response.data['access']
         print(token)
+
+    def test_obtain_token_anonymous(self):
+        response = self.client.post(self.url, {}, format='json')
+        self.assertEqual(response.status_code, 400)
