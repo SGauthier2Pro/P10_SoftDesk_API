@@ -87,21 +87,30 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
         if Project.objects.filter(id=project_id).exists():
             project = Project.objects.get(id=project_id)
             if project.author_user_id == self.request.user:
-                user = get_object_or_404(
-                    User.objects.filter(
-                        pk=self.kwargs['pk'])
-                )
-                Contributor.objects.filter(
-                        project_id=project_id,
-                        user_id=user
-                    ).delete()
-                return Response(
-                    {'message': 'The user has been delete from project'},
-                    status=status.HTTP_200_OK
-                )
+                if User.objects.filter(pk=self.kwargs['pk']).exists():
+                    user = User.objects.get(pk=self.kwargs['pk'])
+                    if Contributor.objects.filter(project_id=project_id,
+                                                  user_id=user).exists():
+                        Contributor.objects.filter(
+                                project_id=project_id,
+                                user_id=user
+                            ).delete()
+                        return Response(
+                            {'message': 'The user has been delete from project'
+                             },
+                            status=status.HTTP_200_OK)
+                    else:
+                        return Response(
+                            {'contributor': "this project/user relationship"
+                                            " doesn't exists"},
+                            status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({'user': "this user_id doesn't exists"},
+                                    status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'message': 'Forbidden action'},
+                return Response({'message': 'You are not the author of this '
+                                            'project'},
                                 status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response({'project': "this project doesn't exists"},
+            return Response({'project': "this project_id doesn't exists"},
                             status=status.HTTP_400_BAD_REQUEST)
