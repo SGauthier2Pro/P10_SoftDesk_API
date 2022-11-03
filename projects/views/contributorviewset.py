@@ -72,7 +72,8 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
                     return Response({'username': "this user doesn't exists"},
                                     status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'message': 'Forbidden action'},
+                return Response({'message': "You are not the project's "
+                                            "author"},
                                 status=status.HTTP_403_FORBIDDEN)
         else:
             return Response({'project': "this project doesn't exists"},
@@ -108,8 +109,8 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
                     return Response({'user': "this user_id doesn't exists"},
                                     status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'message': 'You are not the author of this '
-                                            'project'},
+                return Response({'message': "You are not the project's "
+                                            "author"},
                                 status=status.HTTP_403_FORBIDDEN)
         else:
             return Response({'project': "this project_id doesn't exists"},
