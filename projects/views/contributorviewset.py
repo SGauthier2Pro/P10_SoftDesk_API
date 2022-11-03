@@ -41,37 +41,42 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
-        project = get_object_or_404(
-            Project.objects.filter(id=project_id)
-        )
-        if project.author_user_id == self.request.user:
-            tmp_serializer = self.get_serializer(data=request.data)
-            user = get_object_or_404(
-                User.objects.filter(
-                    username=tmp_serializer.initial_data['user_id'])
-            )
-            if user:
-                contributor = Contributor(
-                    user_id=user,
-                    project_id=project,
-                    permission=tmp_serializer.initial_data['permission'],
-                    role=tmp_serializer.initial_data['role']
-                )
-                contributor_data = self.serializer_class(
-                    instance=contributor).data
-                serializer = self.get_serializer(data=contributor_data)
-                serializer.is_valid(raise_exception=True)
-                self.perform_create(serializer)
-                headers = self.get_success_headers(serializer.data)
-                return Response(serializer.data,
-                                status=status.HTTP_201_CREATED,
-                                headers=headers)
+
+        if Project.objects.filter(id=project_id).exists():
+            project = Project.objects.get(id=project_id)
+
+            if project.author_user_id == self.request.user:
+                tmp_serializer = self.get_serializer(data=request.data)
+
+                if User.objects.filter(
+                        username=tmp_serializer.initial_data['user_id']
+                ).exists():
+                    user = User.objects.get(
+                        username=tmp_serializer.initial_data['user_id'])
+                    contributor = Contributor(
+                        user_id=user,
+                        project_id=project,
+                        permission=tmp_serializer.initial_data['permission'],
+                        role=tmp_serializer.initial_data['role']
+                    )
+                    contributor_data = self.serializer_class(
+                        instance=contributor).data
+                    serializer = self.get_serializer(data=contributor_data)
+                    serializer.is_valid(raise_exception=True)
+                    self.perform_create(serializer)
+                    headers = self.get_success_headers(serializer.data)
+                    return Response(serializer.data,
+                                    status=status.HTTP_201_CREATED,
+                                    headers=headers)
+                else:
+                    return Response({'username': "this user doesn't exists"},
+                                    status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'username': "this user doesn't exists"},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'Forbidden action'},
+                                status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response({'message': 'Forbidden action'},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response({'project': "this project doesn't exists"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         serializer.save()
