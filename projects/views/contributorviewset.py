@@ -13,7 +13,7 @@ Contributor viewset class
 
 
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -41,7 +41,7 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
                                       user_id=self.request.user).exists():
             return queryset
         else:
-            raise ValidationError(detail="You are not Project's contributor")
+            raise PermissionDenied(detail="You are not Project's contributor")
 
     def create(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']

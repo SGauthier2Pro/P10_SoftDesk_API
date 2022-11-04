@@ -13,9 +13,9 @@ Issue viewset class
 
 
 from rest_framework.viewsets import ModelViewSet
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 
 from .multipleserializermixin import MultipleSerializerMixin
 
@@ -39,18 +39,19 @@ class IssueViewset(MultipleSerializerMixin, ModelViewSet):
     def get_queryset(self):
         project_id = self.kwargs['project_id']
         queryset = Issue.objects.filter(project_id=project_id)
-        return queryset
+        if Contributor.objects.filter(project_id=project_id,
+                                      user_id=self.request.user).exists():
+            return queryset
+        else:
+            raise PermissionDenied(detail="You are not Project's contributor")
 
     def create(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
+        if Project.objects.filter(id=project_id).exists():
+            project = Project.objects.get(id=project_id)
 
-        project = get_object_or_404(
-            Project.objects.filter(id=project_id)
-        )
-
-        contributors = Contributor.objects.filter(project_id=project.id)
-        for contributor in contributors:
-            if contributor.user_id == self.request.user:
+            if Contributor.objects.filter(project_id=project_id,
+                                          user_id=self.request.user).exists():
 
                 serializer = self.get_serializer(
                     data={'project_id': project.id,
@@ -69,37 +70,44 @@ class IssueViewset(MultipleSerializerMixin, ModelViewSet):
                 return Response(serializer.data,
                                 status=status.HTTP_201_CREATED,
                                 headers=headers)
-        return Response({'message': "Vous n'êtes pas contributeur "
-                                    "de ce projet"},
-                        status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response({'contributor': "You are not project's"
+                                                " contributor"},
+                                status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response({'project': "This project_ID doesn't exists"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
-        instance = self.get_object()
-        serializer = self.get_serializer(instance,
-                                         data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        if instance.project_id.id == int(project_id):
-            if instance.author_user_id.id == self.request.user.id:
+        if Project.objects.filter(id=project_id).exists():
+            instance = self.get_object()
+            serializer = self.get_serializer(instance,
+                                             data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            if instance.project_id.id == int(project_id):
+                if instance.author_user_id.id == self.request.user.id:
 
-                instance = serializer.save()
-                self.perform_update(instance)
-                headers = self.get_success_headers(serializer.validated_data)
-                return Response(serializer.data,
-                                status=status.HTTP_206_PARTIAL_CONTENT,
-                                headers=headers)
+                    instance = serializer.save()
+                    self.perform_update(instance)
+                    headers = self.get_success_headers(
+                        serializer.validated_data)
+                    return Response(serializer.data,
+                                    status=status.HTTP_200_OK,
+                                    headers=headers)
+                else:
+                    return Response(
+                        {'message': "Vous n'êtes pas authorisé à"
+                                    " modifier ce probleme"},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
             else:
                 return Response(
-                    {'message': "Vous n'êtes pas authorisé à"
-                                " modifier ce probleme"},
-                    status=status.HTTP_403_FORBIDDEN
-                )
+                    {'message': "ce problème n'existe pas pour ce projet"},
+                    status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(
-                {
-                    'message': "ce problème n'existe pas pour ce projet"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({'project': "This project_ID doesn't exists"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
@@ -117,7 +125,5 @@ class IssueViewset(MultipleSerializerMixin, ModelViewSet):
                                 status=status.HTTP_403_FORBIDDEN)
         else:
             return Response(
-                {
-                    'message': "ce problème n'existe pas pour ce projet"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+                {'message': "ce problème n'existe pas pour ce projet"},
+                status=status.HTTP_400_BAD_REQUEST)
