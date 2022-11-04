@@ -13,7 +13,7 @@ Contributor viewset class
 
 
 from rest_framework.viewsets import ModelViewSet
-from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -41,7 +41,7 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
                                       user_id=self.request.user).exists():
             return queryset
         else:
-            return queryset.none()
+            raise ValidationError(detail="You are not Project's contributor")
 
     def create(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
@@ -101,8 +101,8 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
                                 user_id=user
                             ).delete()
                         return Response(
-                            {'message': 'The user has been delete from project'
-                             },
+                            {'message': 'The user has been deleted '
+                                        'from project'},
                             status=status.HTTP_200_OK)
                     else:
                         return Response(
