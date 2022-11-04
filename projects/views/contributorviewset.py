@@ -37,7 +37,11 @@ class ContributorViewset(MultipleSerializerMixin, ModelViewSet):
     def get_queryset(self):
         project_id = self.kwargs['project_id']
         queryset = Contributor.objects.filter(project_id=project_id)
-        return queryset
+        if Contributor.objects.filter(project_id=project_id,
+                                      user_id=self.request.user).exists():
+            return queryset
+        else:
+            return queryset.none()
 
     def create(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
