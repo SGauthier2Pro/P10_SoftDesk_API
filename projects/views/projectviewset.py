@@ -58,13 +58,13 @@ class ProjectViewset(MultipleSerializerMixin, ModelViewSet):
                                          data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        if instance.author_user_id.id == self.request.user.id:
+        if instance.author_user_id == self.request.user:
 
             instance = serializer.save()
             self.perform_update(instance)
             headers = self.get_success_headers(serializer.validated_data)
             return Response(serializer.data,
-                            status=status.HTTP_206_PARTIAL_CONTENT,
+                            status=status.HTTP_200_OK,
                             headers=headers)
         else:
             return Response(

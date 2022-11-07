@@ -37,22 +37,26 @@ class CommentViewset(MultipleSerializerMixin, ModelViewSet):
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
-        issue_id = self.kwargs['issue_id']
-        queryset = Comment.objects.filter(issue_id=issue_id)
-        if Contributor.objects.filter(project_id=project_id,
-                                      user_id=self.request.user).exists():
-            if Issue.objects.filter(id=issue_id).exists():
-                issue = Issue.objects.get(id=issue_id)
-                if issue.project_id.id == int(project_id):
-                    return queryset
+        if Project.objects.filter(id=project_id).exists():
+            project = Project.objects.get(id=project_id)
+            issue_id = self.kwargs['issue_id']
+            queryset = Comment.objects.filter(issue_id=issue_id)
+            if Contributor.objects.filter(project_id=project_id,
+                                          user_id=self.request.user).exists():
+                if Issue.objects.filter(id=issue_id).exists():
+                    issue = Issue.objects.get(id=issue_id)
+                    if issue.project_id == project:
+                        return queryset
+                    else:
+                        raise ValidationError(detail="This issue doesn't "
+                                                     "exists for this project")
                 else:
-                    raise ValidationError(detail="This issue doesn't exists "
-                                                 "for this project")
+                    raise ValidationError(detail="This issue doesn't exists")
             else:
-                raise ValidationError(detail="This issue doesn't exists")
+                raise PermissionDenied(detail="You are not contributor "
+                                              "for this project")
         else:
-            raise PermissionDenied(detail="You are not contributor "
-                                          "for this project")
+            raise ValidationError(detail="This project doesn't exists")
 
     def create(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
