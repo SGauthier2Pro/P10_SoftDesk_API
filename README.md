@@ -127,6 +127,17 @@ In order to use the API please refere you to the online documentation at thi adr
 https://documenter.getpostman.com/view/21154794/2s8YYPJ1Vu
 
 ***
+## PEP8 reports
+***
+
+In order to generate the flake8-html report, type the following command from the program folder :
+
+```
+    flake8 --format=html --htmldir=flake8-report --exclude env ../SoftDesk_API
+```  
+
+***
+***
 ## FAQs
 ***
 ***
