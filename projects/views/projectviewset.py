@@ -53,33 +53,47 @@ class ProjectViewset(MultipleSerializerMixin, ModelViewSet):
         contributor.save()
 
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance,
-                                         data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
+        if Project.objects.filter(id=self.kwargs['pk']):
+            instance = self.get_object()
 
-        if instance.author_user_id == self.request.user:
+            serializer = self.get_serializer(instance,
+                                             data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
 
-            instance = serializer.save()
-            self.perform_update(instance)
-            headers = self.get_success_headers(serializer.validated_data)
-            return Response(serializer.data,
-                            status=status.HTTP_200_OK,
-                            headers=headers)
+            if instance.author_user_id == self.request.user:
+
+                instance = serializer.save()
+                self.perform_update(instance)
+                headers = self.get_success_headers(serializer.validated_data)
+                return Response(serializer.data,
+                                status=status.HTTP_200_OK,
+                                headers=headers)
+            else:
+                return Response(
+                    {'message': "You are not authorized to modifiy "
+                                "this project"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
         else:
             return Response(
-                {'message': "Vous n'êtes pas authorisé à modifier ce projet"},
-                status=status.HTTP_403_FORBIDDEN
+                {'message': "This project id doesn't exists"},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        user = request.user
-        if instance.author_user_id == user:
-            self.perform_destroy(instance)
-            return Response({'message': 'Le projet a bien été supprimer'},
-                            status=status.HTTP_200_OK)
+        if Project.objects.filter(id=self.kwargs['pk']):
+            instance = self.get_object()
+            user = request.user
+            if instance.author_user_id == user:
+                self.perform_destroy(instance)
+                return Response({'message': 'The project has been deleted'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({'message': "You are not authorized "
+                                            "to delete this project"},
+                                status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response({'message': "Vous n'êts pas autorisé "
-                                        "à supprimer ce projet"},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {'message': "This project id doesn't exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
