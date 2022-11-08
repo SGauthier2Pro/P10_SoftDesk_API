@@ -116,5 +116,19 @@ You have now to clone the distant repository on your computer.
 2. Create a virtual environment for the project with ```$ python -m venv env``` on windows or ```$ python3 -m venv env``` on macos or linux.
 3. Activate the virtual environment with ```$ env\Scripts\activate.bat``` on windows or ```$ source env/bin/activate``` on macos or linux.
 4. Install project dependencies with ```$ pip install -r requirements.txt```
-6. Create an admin user for your server with ```$ python manage.py createsuperuser``` on windows or ```$ python3 manage.py createsuperuser``` on macos or linux.
-8. Start the server with ```$ python manage.py runserver``` on windows or ```$ python3 manage.py runserver```on macos or linux.
+5. Create an admin user for your server with ```$ python manage.py createsuperuser``` on windows or ```$ python3 manage.py createsuperuser``` on macos or linux.
+6. Start the server with ```$ python manage.py runserver``` on windows or ```$ python3 manage.py runserver```on macos or linux.
+
+***
+## Starting Softdesk_API
+***
+***
+In order to use the API please refere you to the online documentation at thi adress:
+https://documenter.getpostman.com/view/21154794/2s8YYPJ1Vu
+
+***
+## FAQs
+***
+***
+N/A
+***
