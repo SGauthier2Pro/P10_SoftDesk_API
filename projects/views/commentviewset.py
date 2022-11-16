@@ -107,7 +107,7 @@ class CommentViewset(MultipleSerializerMixin, ModelViewSet):
             if Issue.objects.filter(id=issue_id).exists():
                 issue = Issue.objects.get(id=issue_id)
                 if issue.project_id == project:
-                    if instance.issue_id.id == issue:
+                    if instance.issue_id == issue:
                         if instance.author_user_id.id == self.request.user.id:
                             instance = serializer.save()
                             self.perform_update(instance)
