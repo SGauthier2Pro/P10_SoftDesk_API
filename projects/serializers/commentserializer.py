@@ -19,3 +19,4 @@ class CommentSerializer(ModelSerializer):
                   'author_user_id',
                   'issue_id',
                   'created_time']
+        read_only_fields = ['id', 'author_user_id']

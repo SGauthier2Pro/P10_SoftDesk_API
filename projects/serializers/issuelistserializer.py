@@ -25,6 +25,7 @@ class IssueListSerializer(ModelSerializer):
                   'author_user_id',
                   'assignee_user_id',
                   'created_time']
+        read_only_fields = ['id', 'author_user_id']
 
     def create(self, validated_data):
         issue = Issue.objects.create(
